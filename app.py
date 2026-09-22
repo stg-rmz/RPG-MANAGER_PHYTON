@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request, redirect
 from models.personaje import Personaje
 from models.repositorio import lista_personajes
+from servicio.personaje_servicio import PersonajeServicio
 
 app = Flask(__name__)
 repo = lista_personajes
+servicio = PersonajeServicio()
 
 @app.route('/personajes', methods=['GET'])
 def listar_personajes():
@@ -15,6 +17,9 @@ def crear_personaje():
     clase = request.form['clase_personaje']
     nivel = int(request.form['nivel'])
     vida = int(request.form['vida'])
+
+    if not servicio.validarPersonaje(nombre, nivel, clase):
+        return "Datos inválidos para crear personaje. <br><br> <a href='/personajes'>Volver a la lista de personajes</a>", 400
 
     nuevo_p = Personaje(nombre, clase, nivel, vida)
     lista_personajes.append(nuevo_p)
